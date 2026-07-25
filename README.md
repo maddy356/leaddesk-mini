@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LeadDesk Mini
 
-## Getting Started
+A full-stack, premium lead capture and management system built for the Digital Heroes Training Task.
 
-First, run the development server:
+## Features
+- **Public Landing Page**: Modern, glassmorphism UI with beautiful micro-animations and gradients. Includes client-side (Zod + React Hook Form) and server-side validation.
+- **Admin Dashboard**: Secured via custom JWT authentication. Includes real-time search filtering and instant status toggling (New, Contacted, Closed).
+- **Fully Responsive**: Works seamlessly on mobile and desktop devices.
+- **MongoDB Database**: Scalable NoSQL document store using Mongoose ORM.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Data Model
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application uses MongoDB (via Mongoose) with two primary collections:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Leads (`leads` collection)**:
+   - `name` (String, Required) - Full name of the lead.
+   - `email` (String, Required) - Email address for contact.
+   - `budgetRange` (String, Required) - Selected budget bracket (`< $1k`, `$1k - $5k`, `$5k+`).
+   - `message` (String, Required) - Description of their project/needs.
+   - `status` (String, Default: `New`) - Current lead status (`New`, `Contacted`, `Closed`).
+   - `createdAt` (Date) - Timestamp of submission.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Admins (`admins` collection)**:
+   - `email` (String, Required, Unique) - Admin login email.
+   - `passwordHash` (String, Required) - Bcrypt hashed password.
 
-## Learn More
+## Authentication Approach
 
-To learn more about Next.js, take a look at the following resources:
+For maximum security without external dependencies like NextAuth, I implemented a robust custom JWT-based authentication system:
+1. **Password Hashing**: When the admin user is created, the password (`password123`) is hashed using `bcryptjs` with a work factor of 10.
+2. **Stateless JWT**: Upon successful login, the server generates a JSON Web Token (JWT) signed with a secret (`JWT_SECRET`), containing the admin's ID and email.
+3. **Secure Cookies**: The JWT is delivered back to the client via an `HttpOnly`, `Secure`, `SameSite=strict` cookie. This prevents XSS attacks from accessing the token.
+4. **Route Protection**: The `/admin` page is a React Server Component that reads the cookie and verifies the JWT on the server before rendering the dashboard. API routes (like GET leads and PATCH status) also verify the token, returning 401 Unauthorized if invalid.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+*Note: For ease of testing, the system automatically seeds a default admin (`admin@leaddesk.com` / `password123`) on the first login attempt if no admins exist.*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment on Vercel (Free Tier)
 
-## Deploy on Vercel
+This application is built with Next.js App Router and is fully optimized for Vercel's Edge/Serverless platform.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push this repository to a public GitHub repo.
+2. Go to [Vercel](https://vercel.com/) and create a new project.
+3. Import your GitHub repository.
+4. Add the following Environment Variables in Vercel:
+   - `MONGODB_URI` = Your MongoDB Atlas connection string.
+   - `JWT_SECRET` = A random long string (e.g., generate using `openssl rand -base64 32`).
+5. Click **Deploy**. Vercel will automatically build and deploy the app.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Loom Walkthrough Guide
+
+To complete your submission, record a Loom video demonstrating the following flow:
+1. Open the live Vercel URL in an incognito/fresh browser window.
+2. Show the beautiful public landing page. Scroll to the footer to show the "Built for Digital Heroes Training Task" credit line.
+3. Fill out the lead capture form with test data and submit it. Show the success state.
+4. Navigate to `/admin/login` and log in using `admin@leaddesk.com` and `password123`.
+5. In the Admin Dashboard, locate the newly submitted lead.
+6. Use the search bar to filter by the lead's name or email.
+7. Toggle the lead's status from "New" to "Contacted" or "Closed".
+8. (Optional) Refresh the page to prove the status change persisted in the database.
