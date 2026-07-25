@@ -1,48 +1,65 @@
 # LeadDesk Mini
 
-A full-stack, premium lead capture and management system built for the Digital Heroes Training Task.
+A full-stack, premium lead capture and management system built with Next.js App Router, MongoDB, and Framer Motion. 
 
-## Features
-- **Public Landing Page**: Modern, glassmorphism UI with beautiful micro-animations and gradients. Includes client-side (Zod + React Hook Form) and server-side validation.
-- **Admin Dashboard**: Secured via custom JWT authentication. Includes real-time search filtering and instant status toggling (New, Contacted, Closed).
-- **Fully Responsive**: Works seamlessly on mobile and desktop devices.
-- **MongoDB Database**: Scalable NoSQL document store using Mongoose ORM.
+LeadDesk Mini provides a modern, highly-animated public landing page for capturing leads, alongside a secure, authenticated admin dashboard for managing those leads.
 
-## Data Model
+## 🚀 Features
 
-The application uses MongoDB (via Mongoose) with two primary collections:
+- **Public Landing Page**: Modern glassmorphism UI with beautiful micro-animations, spring-physics interactions, and dynamic background gradients using Framer Motion.
+- **Form Validation**: Client-side (Zod + React Hook Form) and server-side validation to ensure clean data.
+- **Admin Dashboard**: Secured via a custom stateless JWT authentication system. 
+- **Lead Management**: Real-time search filtering and instant status toggling (New, Contacted, Closed).
+- **Responsive Design**: Flawless experience across mobile, tablet, and desktop devices.
+- **NoSQL Database**: Scalable NoSQL document store using MongoDB and Mongoose ORM.
 
-1. **Leads (`leads` collection)**:
-   - `name` (String, Required) - Full name of the lead.
-   - `email` (String, Required) - Email address for contact.
-   - `budgetRange` (String, Required) - Selected budget bracket (`< $1k`, `$1k - $5k`, `$5k+`).
-   - `message` (String, Required) - Description of their project/needs.
-   - `status` (String, Default: `New`) - Current lead status (`New`, `Contacted`, `Closed`).
-   - `createdAt` (Date) - Timestamp of submission.
+## 🛠️ Tech Stack
 
-2. **Admins (`admins` collection)**:
-   - `email` (String, Required, Unique) - Admin login email.
-   - `passwordHash` (String, Required) - Bcrypt hashed password.
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Database**: [MongoDB](https://www.mongodb.com/) & [Mongoose](https://mongoosejs.com/)
+- **Styling**: Vanilla CSS (CSS Variables, Flexbox/Grid, Glassmorphism)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Forms**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Authentication**: Custom JWT (JSON Web Tokens) with `bcryptjs` and secure `HttpOnly` cookies.
 
-## Authentication Approach
+## 📦 Local Setup
 
-For maximum security without external dependencies like NextAuth, I implemented a robust custom JWT-based authentication system:
-1. **Password Hashing**: When the admin user is created, the password (`password123`) is hashed using `bcryptjs` with a work factor of 10.
-2. **Stateless JWT**: Upon successful login, the server generates a JSON Web Token (JWT) signed with a secret (`JWT_SECRET`), containing the admin's ID and email.
-3. **Secure Cookies**: The JWT is delivered back to the client via an `HttpOnly`, `Secure`, `SameSite=strict` cookie. This prevents XSS attacks from accessing the token.
-4. **Route Protection**: The `/admin` page is a React Server Component that reads the cookie and verifies the JWT on the server before rendering the dashboard. API routes (like GET leads and PATCH status) also verify the token, returning 401 Unauthorized if invalid.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/maddy356/leaddesk-mini.git
+   cd leaddesk-mini
+   ```
 
-*Note: For ease of testing, the system automatically seeds a default admin (`admin@leaddesk.com` / `password123`) on the first login attempt if no admins exist.*
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
+3. **Configure Environment Variables:**
+   Create a `.env.local` file in the root directory and add your credentials:
+   ```env
+   MONGODB_URI=mongodb+srv://<username>:<password>@cluster0...
+   JWT_SECRET=your_super_secret_jwt_key
+   ```
 
-## Loom Walkthrough Guide
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
 
-To complete your submission, record a Loom video demonstrating the following flow:
-1. Open the live Vercel URL in an incognito/fresh browser window.
-2. Show the beautiful public landing page. Scroll to the footer to show the "Built for Digital Heroes Training Task" credit line.
-3. Fill out the lead capture form with test data and submit it. Show the success state.
-4. Navigate to `/admin/login` and log in using `admin@leaddesk.com` and `password123`.
-5. In the Admin Dashboard, locate the newly submitted lead.
-6. Use the search bar to filter by the lead's name or email.
-7. Toggle the lead's status from "New" to "Contacted" or "Closed".
-8. (Optional) Refresh the page to prove the status change persisted in the database.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🔐 Admin Authentication
+
+The application uses a custom JWT-based authentication system:
+- When the first admin user registers, their password is hashed using `bcryptjs`.
+- Upon login, a JWT is generated and stored in a secure `HttpOnly` cookie.
+- The `/admin` dashboard is a React Server Component that verifies the JWT on the server before rendering. API routes also verify this token to prevent unauthorized access.
+
+To access the dashboard locally, use the "Admin Login" link on the top right of the landing page or navigate to `/admin/login`.
+
+## 🌐 Deployment
+
+This application is fully optimized for Vercel's Edge/Serverless platform.
+Deploying requires setting the `MONGODB_URI` and `JWT_SECRET` environment variables in your hosting provider's dashboard.
