@@ -34,17 +34,6 @@ For maximum security without external dependencies like NextAuth, I implemented 
 
 *Note: For ease of testing, the system automatically seeds a default admin (`admin@leaddesk.com` / `password123`) on the first login attempt if no admins exist.*
 
-## Deployment on Vercel (Free Tier)
-
-This application is built with Next.js App Router and is fully optimized for Vercel's Edge/Serverless platform.
-
-1. Push this repository to a public GitHub repo.
-2. Go to [Vercel](https://vercel.com/) and create a new project.
-3. Import your GitHub repository.
-4. Add the following Environment Variables in Vercel:
-   - `MONGODB_URI` = Your MongoDB Atlas connection string.
-   - `JWT_SECRET` = A random long string (e.g., generate using `openssl rand -base64 32`).
-5. Click **Deploy**. Vercel will automatically build and deploy the app.
 
 ## Loom Walkthrough Guide
 
